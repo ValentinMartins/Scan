@@ -5,10 +5,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.example.scan.models.DriveInfo;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 public class MainController {
@@ -18,6 +20,7 @@ public class MainController {
     @FXML private TableColumn<DriveInfo,String> colTotal;
     @FXML private TableColumn<DriveInfo,String> colFree;
     @FXML private Button btnScan;
+    @FXML private Button btnFolder;
 
     @FXML
     private void initialize() {
@@ -54,5 +57,27 @@ public class MainController {
         scanStage.show();
         /* (optionnel) Fermer la fenêtre de sélection des disques */
         ((Stage) btnScan.getScene().getWindow()).close();
+    }
+
+    @FXML private void onScanFolder() throws IOException {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Choose folder to scan");
+        File dir = chooser.showDialog(btnFolder.getScene().getWindow());
+        if (dir != null) {
+            openScanWindow(dir, dir.getAbsolutePath());
+        }
+    }
+
+    private void openScanWindow(File root, String title) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ScanView.fxml"));
+        Stage stage = new Stage();
+        stage.setTitle("Scanning " + title);
+        stage.setScene(new Scene(loader.load()));
+
+        ScanController ctrl = loader.getController();
+        ctrl.startScan(root);
+
+        stage.show();
+        // selon préférence : ne pas fermer la fenêtre principale
     }
 }

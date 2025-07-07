@@ -23,6 +23,7 @@
             <padding>
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
+            <Button fx:id="btnFolder" text="Scan folder…"   onAction="#onScanFolder"/>
             <Button fx:id="btnScan"
                     text="Scan selected drive"
                     onAction="#onScan"/>
