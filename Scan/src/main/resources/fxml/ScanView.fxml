@@ -1,22 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.example.scan.controller.ScanController"
-      spacing="10">
-    <padding>
-        <Insets top="15" right="15" bottom="15" left="15"/>
-    </padding>
-<ProgressBar fx:id="bar" prefWidth="600" progress="0"/>
-    <TreeTableView fx:id="tree" prefHeight="600">
-        <columns>
-            <TreeTableColumn fx:id="colName" text="Name" prefWidth="400"/>
-            <TreeTableColumn fx:id="colSize" text="Size" prefWidth="150"/>
-        </columns>
-    </TreeTableView>
-    <Label fx:id="lblStatus" text="Waiting…"/>
-</VBox>
 
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.scan.controller.ScanController"
+            fx:id="root">
+
+    <!-- ▸ barre de progression – occupe toute la largeur -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 10;">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <ProgressBar fx:id="bar"
+                         progress="0"
+                         maxWidth="Infinity"
+                         HBox.hgrow="ALWAYS"/>
+        </HBox>
+    </top>
+
+
+    <!-- ▸ table qui grandit en hauteur -->
+    <center>
+        <TreeTableView fx:id="tree"
+                       BorderPane.alignment="CENTER">
+            <columns>
+                <TreeTableColumn fx:id="colName" text="Name" prefWidth="400"/>
+                <TreeTableColumn fx:id="colSize" text="Size" prefWidth="150"/>
+            </columns>
+        </TreeTableView>
+    </center>
+
+    <!-- ▸ label d’état collé en bas -->
+    <bottom>
+        <HBox alignment="CENTER_LEFT" spacing="8">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <Label fx:id="lblStatus" text="Waiting…"/>
+        </HBox>
+    </bottom>
+</BorderPane>

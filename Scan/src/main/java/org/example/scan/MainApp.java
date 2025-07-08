@@ -11,8 +11,8 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
         Scene scene = new Scene(
                 FXMLLoader.load(getClass().getResource("/fxml/MainView.fxml")));
-        // Appliquer un thème sombre (facultatif)
-        // scene.getStylesheets().add(getClass().getResource("/css/dark-theme.css").toExternalForm());
+        scene.getStylesheets()
+                .add(getClass().getResource("/css/dark-theme.css").toExternalForm());
 
         stage.setTitle("Disk Space Analyzer");
         stage.setScene(scene);
