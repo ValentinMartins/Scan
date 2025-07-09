@@ -88,3 +88,85 @@
 #lblStatus {
     -fx-text-fill: #e0e0e0;      /* même blanc que le reste */
 }
+
+/* nouveau rendu liste + pie */
+.list-view {
+    -fx-background-color: #20222b;
+}
+.list-cell {
+    -fx-text-fill: #e0e0e0;
+    -fx-padding: 4 6 4 6;
+}
+.list-cell:filled:selected {
+    -fx-background-color: #374151;
+}
+
+/* PieChart couleurs sobres + légende claire */
+.chart-pie {
+    -fx-pie-label-visible: false;
+}
+.chart-legend-item-symbol {
+    -fx-background-radius: 3;
+}
+.chart-legend {
+    -fx-text-fill: #d0d0d0;
+}
+/* --------- PieChart ---------- */
+.chart {
+    -fx-background-color: transparent;
+}
+/* -------- PieChart couleurs fixes (ordre JavaFX) -------- */
+.default-color0.chart-pie { -fx-pie-color: #f87171; }  /* Video     */
+.default-color1.chart-pie { -fx-pie-color: #facc15; }  /* Documents */
+.default-color2.chart-pie { -fx-pie-color: #34d399; }  /* Images    */
+.default-color3.chart-pie { -fx-pie-color: #38bdf8; }  /* Audio     */
+.default-color4.chart-pie { -fx-pie-color: #6366f1; }  /* Other     */
+
+/* label “name” un peu plus lumineux */
+.name-label { -fx-text-fill: #F8FAFC; -fx-font-weight: 600; }
+
+
+.chart-legend { -fx-background-color: transparent; }
+.chart-legend-item-symbol { -fx-padding: 4 8 4 4; }
+
+/* --------- ListView (top files) ---------- */
+.list-view {
+    -fx-background-color: #20222b;
+    -fx-control-inner-background: #20222b;
+    -fx-border-color: #2a2d3a;
+}
+
+.list-cell {
+    -fx-text-fill: #d0d0d0;
+    -fx-padding: 4 8;
+}
+.list-cell:selected {
+    -fx-background-color: #374151;
+    -fx-text-fill: white;
+}
+
+/* titre “Top 10 files” centré & blanc */
+.subtitle-centre {
+    -fx-text-fill: #374151;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+.tree-table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #d0d0d0;
+}
+.list-view {
+    -fx-background-color:#20222b;
+    -fx-control-inner-background:#20222b;
+    -fx-border-color:#2a2d3a;
+    -fx-border-radius:6;
+}
+.list-cell:selected {
+    -fx-background-color:#374151;
+    -fx-background-radius:4;
+}
+
+.list-cell .name-label {        /* label du nom de fichier   */
+    -fx-text-fill: #F1F5F9;     /* blanc + clair             */
+    -fx-font-weight: normal;
+}

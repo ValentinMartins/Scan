@@ -3,6 +3,8 @@
 <?import javafx.scene.control.*?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.scan.controller.MainController"
             prefWidth="960" prefHeight="640"
@@ -12,7 +14,7 @@
     <left>
         <VBox spacing="16" alignment="TOP_CENTER" styleClass="sidebar">
             <Button fx:id="btnScanPage" text="➜" onAction="#showScanPage"  styleClass="nav-btn"/>
-            <Button text="📁" onAction="#showDrivePage" styleClass="nav-btn"/>
+            <Button text="💾" onAction="#showDrivePage" styleClass="nav-btn"/>
             <Button text="ℹ" onAction="#showAbout"     styleClass="nav-btn"/>
         </VBox>
     </left>
@@ -57,10 +59,20 @@
             </padding>
 
             <Label text="Size >" styleClass="subtitle"/>
-            <HBox spacing="8">
-                <Slider fx:id="sliderSize" min="0" max="1024" value="100" prefWidth="140"/>
-                <Label fx:id="lblSize" text="100 MB"/>
-            </HBox>
+            <VBox spacing="6">
+
+                <!-- valeur -->
+                <TextField fx:id="txtSize" promptText="minimum" />
+
+                <!-- unité -->
+                <ComboBox fx:id="cbUnit" prefWidth="140" />
+
+                <!-- bouton -->
+                <Button fx:id="btnApplySize"
+                        text="Apply"
+                        maxWidth="Infinity"
+                        styleClass="primary-btn"/>
+            </VBox>
             <Separator/>
 
             <Label text="Filter type" styleClass="subtitle"/>
@@ -69,6 +81,7 @@
                 <CheckBox fx:id="chkImgs"  text="Images"    selected="true"/>
                 <CheckBox fx:id="chkAudio" text="Audio"     selected="true"/>
                 <CheckBox fx:id="chkVideo" text="Video"     selected="true"/>
+                <CheckBox fx:id="chkOther" text="Other"     selected="true"/>
             </VBox>
         </VBox>
     </right>

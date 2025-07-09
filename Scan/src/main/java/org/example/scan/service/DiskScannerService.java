@@ -15,8 +15,8 @@ public class DiskScannerService {
     private final ExecutorService pool = ForkJoinPool.commonPool();
 
     public void scan(Path root,
-                     Consumer<Double> onProgress,          // 0-1
-                     BiConsumer<ScanNode,Long> onFinish)  // arbre + durée ms
+                     Consumer<Double>           onProgress,   // 0-1 ou –1 indéterminé
+                     BiConsumer<ScanNode,Long> onFinish)     // arbre + durée (ms)
     {
         long start = System.currentTimeMillis();
 
@@ -29,70 +29,75 @@ public class DiskScannerService {
                 });
     }
 
-    /* ---------- implémentation interne ---------- */
+    /* ---------------------------------------------------------------------- */
     private ScanNode buildTree(Path root, Consumer<Double> progress) {
-        ScanNode rootNode = new ScanNode(root);
+
+        /* ───────── estimation pour la progression ───────── */
         AtomicLong bytesTotal = new AtomicLong();
         AtomicLong bytesDone  = new AtomicLong();
-
-        /* Estimer l’espace total pour un % approximatif */
         try { bytesTotal.set(Files.getFileStore(root).getTotalSpace()); }
         catch (IOException ignored) {}
 
+        /* ───────── parcours profondeur-d’abord ───────── */
+        ScanNode[] rootHolder = new ScanNode[1];                   // ref finale
         try {
             Files.walkFileTree(root, new SimpleFileVisitor<>() {
 
                 private final ConcurrentLinkedDeque<ScanNode> stack = new ConcurrentLinkedDeque<>();
 
-                /* -- dossiers -- */
+                /* ── avant d’entrer dans un dossier ────────────────────────── */
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-                    ScanNode n = new ScanNode(dir);
-                    if (!stack.isEmpty()) stack.peek().getChildren().add(n);
-                    stack.push(n);
+                    ScanNode dirNode = new ScanNode(dir, 0L);      // taille 0 temporaire
+                    if (!stack.isEmpty()) stack.peek().addChild(dirNode);
+                    stack.push(dirNode);
+
                     return FileVisitResult.CONTINUE;
                 }
 
-                /* -- fichiers -- */
+                /* ── fichier rencontré ─────────────────────────────────────── */
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                     long size = attrs.size();
-                    ScanNode leaf = new ScanNode(file);
-                    leaf.sizeProperty().set(size);
-                    stack.peek().getChildren().add(leaf);
-                    stack.forEach(p -> p.sizeProperty().set(p.getSize() + size));
 
-                    /* progression */
-                    double pct = bytesTotal.get() == 0 ? -1 :
-                            bytesDone.addAndGet(size) / (double) bytesTotal.get();
+                    // nœud feuille
+                    ScanNode fileNode = new ScanNode(file, size);
+                    stack.peek().addChild(fileNode);               // dans le dossier courant
+
+                    // propager la taille au(x) dossier(s) parents
+                    stack.forEach(n -> n.setSize(n.getSize() + size));
+
+                    // progression
+                    double pct = bytesTotal.get() == 0 ? -1
+                            : bytesDone.addAndGet(size) / (double) bytesTotal.get();
                     progress.accept(pct);
+
                     return FileVisitResult.CONTINUE;
                 }
 
-                /* -- dossiers terminés -- */
+                /* ── après avoir quitté un dossier ─────────────────────────── */
                 @Override
                 public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
-                    ScanNode done = stack.pop();
-                    if (stack.isEmpty()) {          // dir == root
-                        rootNode.getChildren().addAll(done.getChildren());
-                        rootNode.sizeProperty().set(done.getSize());
+                    ScanNode finished = stack.pop();
+                    if (stack.isEmpty()) {             // c’était la racine
+                        rootHolder[0] = finished;
                     }
                     return FileVisitResult.CONTINUE;
                 }
 
-                /* -- erreurs (droits refusés, etc.) -- */
+                /* ── erreurs d’accès : on ignore ───────────────────────────── */
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException exc) {
-                    // on ignore simplement et on continue
                     return FileVisitResult.CONTINUE;
                 }
             });
         } catch (IOException e) {
-            // log général, mais le scan continue grâce au skip ci-dessus
-            e.printStackTrace();
+            e.printStackTrace();   // log global, le scan continue quand même
         }
 
-        progress.accept(1.0);   // terminé
-        return rootNode;
+        progress.accept(1.0);      // 100 %
+        return rootHolder[0] != null
+                ? rootHolder[0]
+                : new ScanNode(root, 0L);   // sécurité
     }
 }
